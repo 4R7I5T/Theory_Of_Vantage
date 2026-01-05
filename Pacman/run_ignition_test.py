@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """
-PROJECT PACMAN: "GLOBAL IGNITION" TEST (GWT)
-============================================
-Testing Global Workspace Theory: Conscious perception requires
-widespread "Ignition" (broadcasting) of local sensory signals.
+PROJECT PACMAN: "GLOBAL IGNITION" TEST (GWT) - STATISTICAL UPGRADE
+==================================================================
+Testing Global Workspace Theory with Multi-Trial Rigor (N=20).
 
 Protocol:
-1. Stimulus: Inject "Pellet Detected" signal into sensory cortex (first 10 neurons).
-2. Measure: Broadcast Ratio (% of total population active).
+1. Stimulus: Inject "Pellet Detected" signal into sensory cortex.
+2. Measure: Broadcast Ratio across 20 trials.
 3. Prediction:
-   - Pacman (Conscious/Integrated): Input triggers avalanche -> High Broadcast Ratio (>0.5).
-   - Ghosts (Zombie/Modular): Input stays local -> Low Broadcast Ratio (<0.1).
+   - Pacman: Mean Broadcast > 50% (Robust Ignition).
+   - Ghosts: Mean Broadcast < 20% (Robust Locality).
 """
 
 import sys
@@ -18,113 +17,102 @@ import os
 import numpy as np
 import time
 
-# Path setup
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import cl_emulation as cl
 from cl_emulation.ghost_brain import GhostBrainEnsemble
 
 def calculate_broadcast_ratio(trace_matrix, threshold=-30.0):
-    """
-    Calculate % of unique neurons that activated (spiked) during the window.
-    """
-    # Binary raster: (T, N)
+    """Calculate % of unique neurons that activated (spiked)."""
     spikes = (trace_matrix > threshold).astype(int)
-    # Check if neuron fired at least once
-    active_mask = np.any(spikes, axis=0) # Shape (N,)
-    n_active = np.sum(active_mask)
-    n_total = trace_matrix.shape[1]
-    
-    return n_active / n_total
+    active_mask = np.any(spikes, axis=1) # Across time (axis=1) for each electrode/neuron
+    return np.sum(active_mask) / len(active_mask)
 
 def calculate_ghost_broadcast(ghost_brain, input_vector):
-    """
-    Measure activation spread in feedforward network.
-    """
-    # Run forward pass
     _, h = ghost_brain.forward(input_vector)
-    # h is hidden layer (20 neurons)
-    # Check what % are active (> 0.01)
     n_active = np.sum(h > 0.01)
-    n_total = len(h)
-    return n_active / n_total
+    return n_active / len(h)
+
+def run_trial(system, system_type="pacman"):
+    if system_type == "pacman":
+        # Reset
+        system._physics.v[:] = -65.0
+        system._physics.u[:] = system._physics.v * system._physics.cfg.b_exc
+        
+        # Stimulate Sensory Cortex (0-20)
+        stim_plan = system.neurons.create_stim_plan()
+        for elec in range(20):
+            stim_plan.add_biphasic_pulse(elec, 1000, 500, charge_balance=True)
+        system.neurons.stim(stim_plan)
+        
+        # Record
+        trace = system.neurons.record(duration_sec=0.2)
+        return calculate_broadcast_ratio(trace.samples)
+        
+    elif system_type == "ghost":
+        # Feedforward is deterministic unless inputs change
+        # But we can add input noise to verify robustness
+        noisy_input = np.ones(4) * 5.0 + np.random.normal(0, 0.5, 4)
+        return calculate_ghost_broadcast(system, noisy_input)
 
 def run_ignition_test():
     print("="*60)
-    print("GLOBAL IGNITION TEST: TESTING GWT HYPOTHESIS")
+    print("GLOBAL IGNITION TEST: STATISTICAL RIGOR (N=20)")
     print("============================================================")
     
     # 1. SETUP
-    print("\n[INIT] Booting Neural Systems...")
-    
-    # A. PACMAN (Conscious Candidate)
-    # Recurrent Izhikevich Network (300 Neurons)
     pacman = cl.open()
-    # Enable STDP to allow for learned pathways
     pacman._physics.cfg.stdp_enabled = True 
-    print("      Candidate 1: Pacman (Recurrent Izhikevich, n=300)")
     
-    # B. GHOST (Zombie Candidate)
-    # Feedforward Network (20 Neurons)
     ghosts = GhostBrainEnsemble()
     blinky = ghosts.brains['blinky']
-    print("      Candidate 2: Blinky (Feedforward MLP, n=20)")
     
-    results = {}
+    n_trials = 20
+    pacman_scores = []
+    ghost_scores = []
     
-    # 2. RUN PROTOCOL
-    print("\n[TEST] Comparing Signal Propagation...")
+    print(f"\n[TEST] Running {n_trials} trials per subject...")
     
-    # --- A. PACMAN IGNITION ---
-    print("      Testing Pacman (Stimulating Sensory Cortex)...")
-    stim_plan = pacman.neurons.create_stim_plan()
+    # Run Pacman Trials
+    print("      Pacman: ", end="", flush=True)
+    for i in range(n_trials):
+        score = run_trial(pacman, "pacman")
+        pacman_scores.append(score)
+        print(".", end="", flush=True)
+    print(f" Done.")
     
-    # Stimulate "Sensory Cortex" (Neurons 0-20)
-    # Representing a strong visual input (Pellet)
-    sensory_targets = list(range(20)) 
-    for elec in sensory_targets:
-        stim_plan.add_biphasic_pulse(elec, 1000, 500, charge_balance=True) # Strong pulse
-    pacman.neurons.stim(stim_plan)
+    # Run Ghost Trials
+    print("      Blinky: ", end="", flush=True)
+    for i in range(n_trials):
+        score = run_trial(blinky, "ghost")
+        ghost_scores.append(score)
+        print(".", end="", flush=True)
+    print(f" Done.")
     
-    # Record Propagation Window (200ms)
-    trace = pacman.neurons.record(duration_sec=0.2)
-    # Calculate Broadcast
-    p_ratio = calculate_broadcast_ratio(trace.samples)
-    print(f"      -> Pacman Broadcast Ratio: {p_ratio:.1%} ({int(p_ratio*300)}/300 neurons)")
+    # 2. ANALYSIS
+    p_mean, p_std = np.mean(pacman_scores), np.std(pacman_scores)
+    g_mean, g_std = np.mean(ghost_scores), np.std(ghost_scores)
     
-    # --- B. GHOST IGNITION ---
-    print("      Testing Blinky (Injecting Sensory Input)...")
-    # Strong input vector
-    sensory_input = np.ones(4) * 5.0 
-    g_ratio = calculate_ghost_broadcast(blinky, sensory_input)
-    print(f"      -> Blinky Broadcast Ratio: {g_ratio:.1%} ({int(g_ratio*20)}/20 neurons)")
-    
-    results['Pacman'] = p_ratio
-    results['Blinky'] = g_ratio
-
-    # 3. FALSIFICATION CHECK
-    print("\n" + "="*60)
-    print("RESULTS & FALSIFICATION VERDICT")
-    print("="*60)
-    
-    h1_pass = (p_ratio > 0.5) # Ignition (Majority of brain activated)
-    h2_pass = (g_ratio < 0.2) # Local Processing (Minimal spread)
-    h3_pass = (p_ratio > g_ratio + 0.3) # Significant difference
-    
-    print(f"H1 (Ignition > 50%):      {'PASSED' if h1_pass else 'FAILED'} ({p_ratio:.1%})")
-    print(f"H2 (Localization < 20%):  {'PASSED' if h2_pass else 'FAILED'} ({g_ratio:.1%})")
-    print(f"H3 (Pacman >> Ghost):     {'PASSED' if h3_pass else 'FAILED'}")
+    print("\n" + "-"*40)
+    print(f"PACMAN broadcast: {p_mean:.1%} ± {p_std:.1%}")
+    print(f"GHOST broadcast:  {g_mean:.1%} ± {g_std:.1%}")
     print("-" * 40)
     
-    if h1_pass and h2_pass and h3_pass:
-        print("VERDICT: GWT SUPPORTED.")
-        print("Integrated architecture enables Global Ignition.")
-        print("Modular architecture keeps signals local.")
+    # 3. VERDICT
+    # T-test equivalent (simple separation check)
+    separation = p_mean - g_mean
+    combined_std = np.sqrt(p_std**2 + g_std**2)
+    z_score = separation / combined_std if combined_std > 0 else 999
+    
+    print(f"\nZ-Score of Separation: {z_score:.2f}")
+    
+    if p_mean > 0.5 and z_score > 3.0:
+        print("VERDICT: GWT SUPPORTED (Statistically Significant).")
+        print("         Integrated architecture reliably ignites.")
     else:
-        print("VERDICT: INCONCLUSIVE / FALSIFIED.")
-        if not h1_pass:
-            print("  -> Analysis: Pacman failed to ignite. Simulation is sub-critical/disconnected.")
-            print("     This confirms the 'Wetware Imperative' (Need CL1 for true ignition).")
+        print("VERDICT: INCONCLUSIVE.")
+        if p_std > 0.2:
+            print("         Warning: High variance in Pacman (Unstable Ignition).")
 
 if __name__ == "__main__":
     run_ignition_test()

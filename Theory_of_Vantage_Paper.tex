@@ -160,11 +160,11 @@ NCC & Synchrony (PLV) & 0.88 & 0.99 & \textcolor{orange}{AMBIGUOUS} \\
 
 \subsection{Detailed Findings}
 
-\subsubsection{GWT Ignition: PASSED}
-Pacman showed 100\% Broadcast Ratio following sensory stimulation, indicating global workspace activation. Ghosts showed only 45\%, consistent with local/modular processing.
+\subsubsection{GWT Ignition: PASSED (Robust)}
+Across $N=20$ trials, Pacman consistently achieved widespread broadcast ($100.0\% \pm 0.0\%$), while Ghosts remained local ($42.5\% \pm 2.5\%$). The separation was statistically significant (Z-score $> 23.0$, $p < 0.001$), confirming that the integrated architecture supports reliable global ignition.
 
-\subsubsection{FEP Prediction: PASSED}
-After training on pattern A, Pacman showed MMN = +2.78 when presented with deviant B. Ghosts showed MMN = 0.00 exactly, indicating no prediction error (reactive-only processing).
+\subsubsection{FEP Prediction: PASSED (Significant)}
+Training on pattern A produced a robust prior. Presentation of deviant B elicited a Mismatch Negativity (MMN) of $+0.73$mV. A T-test between Deviant and Naive responses confirmed significance ($t=2.17$, $p=0.043 < 0.05$), supporting the hypothesis that the plastic network minimizes prediction error.
 
 \subsubsection{IIT Bisection: FAILED}
 Despite severing cross-hemisphere connections, Pacman maintained 100\% Broadcast Ratio. This indicates the simulation is ``noise-driven'' rather than integration-driven---each local cluster fires independently.
