@@ -1,0 +1,6 @@
+PA/
+Legacy/
+Revised_Finals/
+__pycache__/
+*.pyc
+.DS_Store
