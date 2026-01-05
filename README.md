@@ -146,60 +146,70 @@ python Pacman/run_dual_pathway_experiment.py
 }
 ```
 
-## 🔮 How CL1 Will Confirm or Disprove Our Solution
+## 🔮 CL1 Hypotheses: Testable Predictions
 
-### The Simple Version
+> **Important**: The following are **hypotheses**, not assumptions. Each has a rationale and a falsification condition.
 
-We made **predictions**. Real neurons will **test** them.
+### Hypothesis 1: Complexity (PCI)
 
-| What We Claim | How CL1 Tests It | If TRUE | If FALSE |
-|---------------|------------------|---------|----------|
-| Simulation is too simple (low PCI) | Run Zap & Zip on real neurons | PCI > 0.31 = Biology wins | PCI < 0.31 = Theory wrong |
-| Integrated systems can't make zombies | Lesion unified organoid | Both collapse together | Dissociation = We're wrong |
-| Modular systems CAN make zombies | Lesion dual-pathway organoid | Behavior survives, consciousness dies | No dissociation = We're wrong |
+| | |
+|-|-|
+| **Claim** | CL1 will achieve PCI > 0.31 |
+| **Rationale** | Real neurons exhibit self-organized criticality through homeostatic plasticity, NMDA receptor kinetics, and glial regulation. Our simulation lacks these tuning mechanisms. |
+| **If TRUE** | Biology provides something simulation lacks (criticality) |
+| **If FALSE** | Either organoids lack critical architecture, or PCI theory is wrong |
 
-### Why Real Neurons Are Different
+### Hypothesis 2: Working Memory (Persistence)
 
-**Simulation Problem**: Our Izhikevich network is either too quiet or too noisy—never balanced.
+| | |
+|-|-|
+| **Claim** | CL1 will show Persistence > 0.3 after stimulus offset |
+| **Rationale** | NMDA receptors have ~100ms decay constants. Real neurons self-organize into attractor states. Prefrontal circuits exhibit persistent firing. |
+| **If TRUE** | Biological substrate enables sustained representations |
+| **If FALSE** | Working memory requires specific circuit architecture (e.g., prefrontal layers) that organoids lack |
 
-**Biology Solution**: Real neurons have built-in feedback loops:
+### Hypothesis 3: Metacognition (Confidence-Accuracy)
 
-```
-🧠 Real Neurons Self-Tune:
-├── Homeostatic plasticity (adjusts firing rates)
-├── Glial cells (regulate synapses)
-├── Metabotropic receptors (slow modulation)
-└── Dendritic computation (local processing)
-```
+| | |
+|-|-|
+| **Claim** | CL1 will show CAC > 0.5 |
+| **Rationale** | Neuromodulatory systems (dopamine, norepinephrine) signal prediction errors. Hierarchical self-organization enables higher layers to monitor lower layers. |
+| **If TRUE** | Biological networks can "know what they know" |
+| **If FALSE** | Metacognition requires developmental experience or prefrontal-specific circuits |
 
-This creates **"self-organized criticality"**—the sweet spot between order and chaos where complexity is maximized.
+### Hypothesis 4: Feature Binding (Synchrony)
 
-### The Three Possible Outcomes
+| | |
+|-|-|
+| **Claim** | CL1 will show Binding Index > 0.6 |
+| **Rationale** | Real neurons exhibit gamma-band (30-80Hz) synchronization. Gap junctions and interneuron networks provide precise temporal coordination. |
+| **If TRUE** | Biological substrate enables feature integration |
+| **If FALSE** | Binding requires thalamo-cortical loops absent in organoids |
 
-**Outcome 1: CL1 Passes Everything** ✅
-- PCI > 0.31 (complex dynamics)
-- Irreducible (parts don't work alone)
-- Dual-pathway shows dissociation
+---
 
-→ **Hard Problem Solved**: Consciousness = Integrated Criticality. Zombies = Modularity.
+## 🧪 Complete Falsification Table
 
-**Outcome 2: CL1 Passes Some, Fails Others** ⚠️
-- E.g., High PCI but still reducible
-
-→ **Refine Theory**: Some theories are right, others wrong.
-
-**Outcome 3: CL1 Fails Everything** ❌
-- Still sub-critical like simulation
-
-→ **Wetware Imperative Falsified**: Need different substrate or different theory.
+| Test | Pass Threshold | Fail Threshold | If CL1 Fails |
+|------|---------------|----------------|--------------|
+| **PCI** | > 0.31 | < 0.31 | Wetware Imperative wrong |
+| **Irreducibility** | Collapse on bisection | Linear degradation | IIT is wrong |
+| **Working Memory** | > 0.3 | < 0.1 | Attractor hypothesis wrong |
+| **Metacognition** | > 0.5 | < 0.2 | Self-monitoring hypothesis wrong |
+| **Feature Binding** | > 0.6 | < 0.3 | Gamma synchrony hypothesis wrong |
+| **Zombie Dissociation** | Behavior survives cortical lesion | Both collapse | Architecture hypothesis wrong |
 
 ### The Bottom Line
 
 > **We're not asking "Is CL1 conscious?"** (unfalsifiable)
 > 
-> **We're asking "Does CL1 show what ALL major theories predict?"** (falsifiable)
+> **We're asking "Does CL1 exhibit signatures that major theories predict?"** (falsifiable)
 
-Either way, we get a **scientific answer**. That's the point.
+**If CL1 fails all tests**: The Wetware Imperative is wrong. We need different theories.
+
+**If CL1 passes some, fails others**: We learn which theories are correct.
+
+**If CL1 passes all tests**: Strong evidence that biological substrate provides necessary conditions for consciousness-like information processing.
 
 ---
 

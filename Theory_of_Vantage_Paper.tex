@@ -285,12 +285,71 @@ We have demonstrated:
     \item \textbf{Wetware Imperative:} Biological substrate is required for self-organized criticality, not for mystical properties.
 \end{enumerate}
 
-\subsection{Future Work}
-The next phase of Project PACMAN will deploy these protocols on \textbf{real CL1 wetware} (800,000 iPSC-derived human neurons). We predict:
+\subsection{CL1 Hypotheses: Testable Predictions}
+
+The following are \textbf{hypotheses}, not assumptions. Each has a rationale and falsification condition.
+
+\subsubsection{Hypothesis 1: Complexity (PCI)}
+\textbf{Claim:} CL1 will achieve PCI $> 0.31$.
+
+\textbf{Rationale:} Real neurons exhibit self-organized criticality through homeostatic plasticity, NMDA receptor kinetics ($\sim$100ms decay), and glial regulation. Our simulation lacks these tuning mechanisms.
+
+\textbf{If TRUE:} Biology provides criticality that simulation cannot achieve.
+
+\textbf{If FALSE:} Either organoids lack necessary architecture, or PCI theory is wrong.
+
+\subsubsection{Hypothesis 2: Working Memory (Persistence)}
+\textbf{Claim:} CL1 will show Persistence $> 0.3$ after stimulus offset.
+
+\textbf{Rationale:} NMDA receptors sustain activity. Real neurons self-organize into attractor states. Prefrontal circuits exhibit persistent firing in delay tasks.
+
+\textbf{If TRUE:} Biological substrate enables sustained representations.
+
+\textbf{If FALSE:} Working memory requires specific circuit architecture that organoids lack.
+
+\subsubsection{Hypothesis 3: Metacognition (CAC)}
+\textbf{Claim:} CL1 will show Confidence-Accuracy Correlation $> 0.5$.
+
+\textbf{Rationale:} Neuromodulatory systems (dopamine, norepinephrine) signal prediction errors. Hierarchical self-organization enables higher layers to monitor lower layers.
+
+\textbf{If TRUE:} Biological networks can ``know what they know.''
+
+\textbf{If FALSE:} Metacognition requires developmental experience or prefrontal-specific circuits.
+
+\subsubsection{Hypothesis 4: Feature Binding (Synchrony)}
+\textbf{Claim:} CL1 will show Binding Index $> 0.6$.
+
+\textbf{Rationale:} Real neurons exhibit gamma-band (30--80Hz) synchronization. Gap junctions and interneuron networks provide precise temporal coordination.
+
+\textbf{If TRUE:} Biological substrate enables feature integration.
+
+\textbf{If FALSE:} Binding requires thalamo-cortical loops absent in organoids.
+
+\subsection{Complete Falsification Table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Test} & \textbf{Pass} & \textbf{Fail} & \textbf{If CL1 Fails} \\
+\midrule
+PCI & $> 0.31$ & $< 0.31$ & Wetware Imperative wrong \\
+Irreducibility & Collapse & Linear & IIT is wrong \\
+Working Memory & $> 0.3$ & $< 0.1$ & Attractor hypothesis wrong \\
+Metacognition & $> 0.5$ & $< 0.2$ & Self-monitoring hypothesis wrong \\
+Feature Binding & $> 0.6$ & $< 0.3$ & Gamma synchrony hypothesis wrong \\
+Zombie Dissociation & Behavior survives & Both collapse & Architecture hypothesis wrong \\
+\bottomrule
+\end{tabular}
+\caption{Falsification thresholds for CL1 experiments.}
+\label{tab:falsification}
+\end{table}
+
+\textbf{Interpretation:}
 \begin{itemize}
-    \item PCI $> 0.31$ under naturalistic conditions
-    \item True irreducibility under bisection
-    \item Dissociable blindsight with subcortical bypass architecture
+    \item If CL1 fails all tests: Wetware Imperative is wrong.
+    \item If CL1 passes some, fails others: We learn which theories are correct.
+    \item If CL1 passes all tests: Strong evidence that biological substrate provides necessary conditions for consciousness-like information processing.
 \end{itemize}
 
 \subsection{Data Availability}
