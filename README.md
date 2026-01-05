@@ -95,25 +95,46 @@ Biological neurons naturally tune to the "edge of chaos" through:
 
 ---
 
-## 📁 Repository Structure
+## 📁 Complete Experiment Index
+
+| # | Theory | Script | Metric | Simulation Result |
+|---|--------|--------|--------|-------------------|
+| 1 | **GWT** (Dehaene) | `run_ignition_test.py` | Broadcast Ratio | ✅ 100% (N=20, Z>23) |
+| 2 | **FEP** (Friston) | `run_prediction_test.py` | MMN | ✅ +0.73mV (p=0.04) |
+| 3 | **IIT** (Tononi) | `run_bisection_test.py` | Collapse Ratio | ❌ Reducible |
+| 4 | **PCI** (Massimini) | `run_zap_and_zip.py` | LZC | ❌ 0.09 (< 0.31) |
+| 5 | **NCC** (Crick) | `run_synchrony_test.py` | PLV | ⚠️ 0.88 (Ambiguous) |
+| 6 | **Hard Problem** | `run_blindsight_test.py` | Dissociation Index | ❌ -0.35 (Opposite) |
+| 7 | **Zombie Proof** | `run_dual_pathway_experiment.py` | Behavioral Survival | ✅ 24% (Modular Only) |
+| 8 | **Working Memory** | `run_working_memory_test.py` | Persistence Index | ❌ 0.00 |
+| 9 | **Metacognition** | `run_metacognition_test.py` | CAC | ❌ -0.19 |
+| 10 | **Feature Binding** | `run_feature_binding_test.py` | Correlation | ❌ 0.04 |
+| 11 | **Demo Game** | `neural_pacman.py` | Live Visualization | 🎮 Interactive |
+
+### Repository Structure
 
 ```
 Theory_Of_Vantage/
-├── Pacman/                          # Experimental runners
-│   ├── run_zap_and_zip.py          # PCI measurement
-│   ├── run_ignition_test.py        # GWT broadcast
-│   ├── run_bisection_test.py       # IIT irreducibility
-│   ├── run_synchrony_test.py       # Gamma binding
-│   ├── run_prediction_test.py      # FEP oddball
-│   ├── run_blindsight_test.py      # Hard Problem dissociation
-│   └── run_dual_pathway_experiment.py  # PROOF: Modularity enables zombies
-├── cl_emulation/                    # Mock CL1 SDK
-│   ├── physics.py                  # Izhikevich dynamics
-│   ├── neurons.py                  # MEA interface
-│   └── ghost_brain.py              # Feedforward control
-├── Theory_of_Vantage_Paper.tex     # Full LaTeX paper
-└── README.md                        # You are here
+├── Pacman/                              # Experimental runners (11 scripts)
+│   ├── run_ignition_test.py            # GWT: Global broadcast
+│   ├── run_prediction_test.py          # FEP: Oddball paradigm
+│   ├── run_bisection_test.py           # IIT: Irreducibility
+│   ├── run_zap_and_zip.py              # PCI: Complexity
+│   ├── run_synchrony_test.py           # NCC: Gamma binding
+│   ├── run_blindsight_test.py          # Hard Problem: Dissociation
+│   ├── run_dual_pathway_experiment.py  # PROOF: Architecture
+│   ├── run_working_memory_test.py      # Persistence
+│   ├── run_metacognition_test.py       # Confidence-Accuracy
+│   ├── run_feature_binding_test.py     # Feature integration
+│   └── neural_pacman.py                # 🎮 LIVE DEMO: Zombies
+├── cl_emulation/                        # Mock CL1 SDK
+│   ├── physics.py                      # Izhikevich dynamics (300N)
+│   ├── neurons.py                      # MEA/electrode interface
+│   └── ghost_brain.py                  # Feedforward MLP (Zombie)
+├── Theory_of_Vantage_Paper.tex         # Full scientific paper
+└── README.md                            # You are here
 ```
+
 
 ---
 
