@@ -146,14 +146,60 @@ python Pacman/run_dual_pathway_experiment.py
 }
 ```
 
----
+## 🔮 How CL1 Will Confirm or Disprove Our Solution
 
-## 🔮 Next Steps
+### The Simple Version
 
-1. **Deploy on CL1 Wetware** — Real neurons, real criticality
-2. **Re-run PCI Protocol** — Expect PCI > 0.31
-3. **Implement Dual-Pathway in Organoid** — Test dissociation in biology
-4. **Publish Falsifiable Results** — Open science
+We made **predictions**. Real neurons will **test** them.
+
+| What We Claim | How CL1 Tests It | If TRUE | If FALSE |
+|---------------|------------------|---------|----------|
+| Simulation is too simple (low PCI) | Run Zap & Zip on real neurons | PCI > 0.31 = Biology wins | PCI < 0.31 = Theory wrong |
+| Integrated systems can't make zombies | Lesion unified organoid | Both collapse together | Dissociation = We're wrong |
+| Modular systems CAN make zombies | Lesion dual-pathway organoid | Behavior survives, consciousness dies | No dissociation = We're wrong |
+
+### Why Real Neurons Are Different
+
+**Simulation Problem**: Our Izhikevich network is either too quiet or too noisy—never balanced.
+
+**Biology Solution**: Real neurons have built-in feedback loops:
+
+```
+🧠 Real Neurons Self-Tune:
+├── Homeostatic plasticity (adjusts firing rates)
+├── Glial cells (regulate synapses)
+├── Metabotropic receptors (slow modulation)
+└── Dendritic computation (local processing)
+```
+
+This creates **"self-organized criticality"**—the sweet spot between order and chaos where complexity is maximized.
+
+### The Three Possible Outcomes
+
+**Outcome 1: CL1 Passes Everything** ✅
+- PCI > 0.31 (complex dynamics)
+- Irreducible (parts don't work alone)
+- Dual-pathway shows dissociation
+
+→ **Hard Problem Solved**: Consciousness = Integrated Criticality. Zombies = Modularity.
+
+**Outcome 2: CL1 Passes Some, Fails Others** ⚠️
+- E.g., High PCI but still reducible
+
+→ **Refine Theory**: Some theories are right, others wrong.
+
+**Outcome 3: CL1 Fails Everything** ❌
+- Still sub-critical like simulation
+
+→ **Wetware Imperative Falsified**: Need different substrate or different theory.
+
+### The Bottom Line
+
+> **We're not asking "Is CL1 conscious?"** (unfalsifiable)
+> 
+> **We're asking "Does CL1 show what ALL major theories predict?"** (falsifiable)
+
+Either way, we get a **scientific answer**. That's the point.
 
 ---
 
