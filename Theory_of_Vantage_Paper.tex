@@ -1,0 +1,302 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\geometry{margin=1in}
+
+\title{\textbf{Theory of Vantage: A Falsifiable Framework for Testing Consciousness in Simulated Neural Networks}}
+
+\author{
+  Project PACMAN Collaboration\\
+  \texttt{https://github.com/4R7I5T/Theory\_Of\_Vantage}
+}
+
+\date{January 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We present a comprehensive experimental framework for testing major theories of consciousness using simulated spiking neural networks. Using an emulated Cortical Labs CL1 system (300 Izhikevich neurons), we implemented and executed six distinct falsifiable protocols derived from: Global Workspace Theory (GWT), Integrated Information Theory (IIT), the Free Energy Principle (FEP), Neural Correlates of Consciousness (NCC), and Perturbational Complexity Index (PCI). Our results reveal a critical distinction between ``Software Consciousness'' (achievable in simulation: GWT broadcast, FEP prediction) and ``Hardware Consciousness'' (requiring biological substrate: IIT irreducibility, PCI complexity). Most significantly, our Blindsight experiment demonstrates that in a unified recurrent network, Function and Phenomenology share identical pathways---creating a ``Zombie'' requires architectural modularity, not mere parameter tuning. These findings provide empirical justification for the ``Wetware Imperative'': biological neurons are necessary not for mystical properties, but for the self-organized criticality that produces high $\Phi$.
+\end{abstract}
+
+\section{Introduction}
+
+\subsection{The Hard Problem}
+David Chalmers' ``Hard Problem'' of consciousness asks why physical processes give rise to subjective experience at all \citep{chalmers1995}. While neuroscience can identify neural correlates of consciousness (NCCs), the explanatory gap between objective function and subjective feeling remains.
+
+\subsection{Falsifiability Requirement}
+We adopt the position that any scientific theory of consciousness must be \textit{falsifiable}. This paper presents a battery of experiments, each designed to produce a measurable prediction that could, in principle, be violated. If a theory predicts X and we observe $\neg$X, the theory is falsified for that system.
+
+\subsection{The Theory of Vantage}
+Our framework---``Theory of Vantage''---holds that consciousness is perspectival: it is the intrinsic nature of integrated information processing. Rather than asking ``Is this system conscious?'', we ask ``Does this system exhibit the signatures that all major theories agree upon?'' Convergent evidence from multiple independent markers increases credibility.
+
+\section{Theoretical Background}
+
+\subsection{Global Workspace Theory (GWT)}
+Dehaene and colleagues propose that consciousness arises when information is broadcast globally across the cortex \citep{dehaene2011}. The ``Global Ignition'' signature is a rapid, widespread activation following a focal sensory input.
+
+\textbf{Prediction:} Conscious systems exhibit Broadcast Ratio $> 50\%$; modular/feedforward systems remain local.
+
+\subsection{Integrated Information Theory (IIT)}
+Tononi's IIT quantifies consciousness as $\Phi$---integrated information \citep{tononi2016}. A key postulate is \textit{Irreducibility}: a conscious system's whole is greater than the sum of its parts. Bisecting it should cause qualitative collapse, not proportional reduction.
+
+\textbf{Prediction:} Cutting a conscious system yields catastrophic failure; cutting a reducible system yields linear degradation.
+
+\subsection{Free Energy Principle (FEP)}
+Friston's FEP posits that conscious systems minimize prediction error \citep{friston2010}. The ``Oddball'' paradigm tests this: training on pattern A, then presenting deviant B, should produce Mismatch Negativity (MMN) in predictive systems.
+
+\textbf{Prediction:} Conscious systems show MMN $> 0$; reactive systems show MMN $= 0$.
+
+\subsection{Perturbational Complexity Index (PCI)}
+Casali et al. developed PCI as an empirical measure of consciousness in unresponsive patients \citep{casali2013}. PCI quantifies the algorithmic complexity of the brain's response to transcranial magnetic stimulation.
+
+\textbf{Prediction:} Conscious (awake) PCI $> 0.31$; unconscious (anesthesia) PCI $< 0.31$.
+
+\subsection{Neural Correlates of Consciousness (NCC)}
+Crick and Koch proposed that 40Hz gamma synchrony ``binds'' distributed features into unified percepts \citep{crick1990}. Phase Locking Value (PLV) quantifies synchrony.
+
+\textbf{Prediction:} Conscious binding shows PLV $> 0.4$; independent processing shows random phase.
+
+\section{Methods}
+
+\subsection{Hardware Emulation}
+We developed \texttt{cl\_emulation}, a mock SDK for the Cortical Labs CL1 organoid interface. The emulator implements:
+
+\begin{itemize}
+    \item \textbf{Neural Physics:} 300 Izhikevich neurons (240 excitatory RS, 60 inhibitory FS)
+    \item \textbf{Connectivity:} Random sparse matrix (20\% connection probability)
+    \item \textbf{Plasticity:} Spike-Timing Dependent Plasticity (STDP) with $\tau = 10$ms
+    \item \textbf{Noise:} Gaussian background current ($\sigma = 2.0$ pA)
+\end{itemize}
+
+The emulator provides API-compatible methods: \texttt{stim()}, \texttt{record()}, and \texttt{loop()}.
+
+\subsection{Experimental Paradigm: Pacman}
+We instantiated the neural network as the ``brain'' of a Pacman agent in a classic arcade environment. Two architectures were compared:
+
+\begin{enumerate}
+    \item \textbf{Pacman (Conscious Candidate):} Recurrent Izhikevich network with STDP
+    \item \textbf{Ghosts (Zombie Control):} Feedforward MLP (20 hidden units, fixed weights)
+\end{enumerate}
+
+\subsection{Experimental Protocols}
+
+\subsubsection{Protocol 1: Zap \& Zip (PCI)}
+\begin{enumerate}
+    \item Record 100ms baseline activity
+    \item ``Zap'': Inject biphasic pulse (1000$\mu$V, 500$\mu$s) to sensory neurons
+    \item Record 200ms evoked response
+    \item ``Zip'': Compute Lempel-Ziv Complexity (LZC) of spike raster
+    \item PCI $\approx$ LZC$_{\text{evoked}}$ - LZC$_{\text{spontaneous}}$
+\end{enumerate}
+
+\subsubsection{Protocol 2: Ignition (GWT)}
+\begin{enumerate}
+    \item Stimulate sensory neurons (0--20)
+    \item Record 200ms response across all 300 neurons
+    \item Compute Broadcast Ratio = $|\{n : v_n > -30\text{mV}\}| / N$
+\end{enumerate}
+
+\subsubsection{Protocol 3: Bisection (IIT)}
+\begin{enumerate}
+    \item ``Virtual Lobotomy'': Set $W_{ij} = 0$ for $|i-j| > 150$
+    \item Re-run Ignition protocol
+    \item Compare pre/post Broadcast Ratio
+\end{enumerate}
+
+\subsubsection{Protocol 4: Synchrony (NCC)}
+\begin{enumerate}
+    \item Drive network with sustained input for 1s
+    \item Bandpass filter traces (30--80Hz)
+    \item Compute Phase Locking Value from Hilbert transform
+\end{enumerate}
+
+\subsubsection{Protocol 5: Prediction (FEP)}
+\begin{enumerate}
+    \item Train: Present stimulus A $\times$ 20 repetitions
+    \item Test: Present deviant stimulus B
+    \item Compute MMN = Response(B$|$A) $-$ Response(B$|$naive)
+\end{enumerate}
+
+\subsubsection{Protocol 6: Blindsight (Hard Problem)}
+\begin{enumerate}
+    \item Define Input neurons (0--29) and Output neurons (270--299)
+    \item Normal condition: Full connectivity
+    \item Lesion condition: Eliminate long-range connections ($|i-j| > 100$)
+    \item Measure: Broadcast Ratio (Phenomenology) vs. Motor Output (Performance)
+\end{enumerate}
+
+\section{Results}
+
+\subsection{Summary Table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llccc}
+\toprule
+\textbf{Theory} & \textbf{Test} & \textbf{Pacman} & \textbf{Ghosts} & \textbf{Verdict} \\
+\midrule
+GWT & Ignition & 100\% & 45\% & \textcolor{green}{PASSED} \\
+FEP & Prediction (MMN) & +2.78 & 0.00 & \textcolor{green}{PASSED} \\
+IIT & Bisection & 100\%$\rightarrow$100\% & --- & \textcolor{red}{FAILED} \\
+PCI & Zap \& Zip & 0.09 & 0.06 & \textcolor{red}{FAILED} \\
+NCC & Synchrony (PLV) & 0.88 & 0.99 & \textcolor{orange}{AMBIGUOUS} \\
+\bottomrule
+\end{tabular}
+\caption{Summary of consciousness test results across paradigms.}
+\label{tab:results}
+\end{table}
+
+\subsection{Detailed Findings}
+
+\subsubsection{GWT Ignition: PASSED}
+Pacman showed 100\% Broadcast Ratio following sensory stimulation, indicating global workspace activation. Ghosts showed only 45\%, consistent with local/modular processing.
+
+\subsubsection{FEP Prediction: PASSED}
+After training on pattern A, Pacman showed MMN = +2.78 when presented with deviant B. Ghosts showed MMN = 0.00 exactly, indicating no prediction error (reactive-only processing).
+
+\subsubsection{IIT Bisection: FAILED}
+Despite severing cross-hemisphere connections, Pacman maintained 100\% Broadcast Ratio. This indicates the simulation is ``noise-driven'' rather than integration-driven---each local cluster fires independently.
+
+\subsubsection{PCI: FAILED}
+Pacman's PCI = 0.09, well below the consciousness threshold of 0.31. The network is sub-critical, lacking the complex dynamics of biological systems at the ``edge of chaos.''
+
+\subsubsection{NCC Synchrony: AMBIGUOUS}
+Both Pacman (0.88) and Ghosts (0.99) showed high PLV. The Ghosts' perfect synchrony arose from entrainment to the rhythmic input---an artifact, not genuine binding.
+
+\subsection{Blindsight Experiment: The Critical Finding}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Condition} & \textbf{Broadcast} & \textbf{Motor Peak} & \textbf{Performance} \\
+\midrule
+Normal & 100\% & +30mV (spiking) & 47\% \\
+Lesioned & 88\% & +19mV (silent) & 0\% \\
+\bottomrule
+\end{tabular}
+\caption{Blindsight experiment results.}
+\label{tab:blindsight}
+\end{table}
+
+\textbf{Dissociation Index = $-0.35$}
+
+Cutting long-range connections caused:
+\begin{itemize}
+    \item Broadcast: 12\% reduction (phenomenology preserved)
+    \item Performance: 47\% reduction (motor output died)
+\end{itemize}
+
+This is the \textbf{opposite} of blindsight. The lesioned system shows ``Consciousness Without Action,'' not ``Action Without Consciousness.''
+
+\section{Discussion}
+
+\subsection{The Software vs. Hardware Divide}
+Our results reveal a fundamental distinction:
+
+\begin{itemize}
+    \item \textbf{Software Consciousness} (GWT, FEP): Achievable in simulation. These theories require architectural properties (broadcast, prediction) that can be engineered.
+    \item \textbf{Hardware Consciousness} (IIT, PCI): Not achievable in simulation. These theories require dynamical properties (criticality, irreducibility) that emerge from biological physics.
+\end{itemize}
+
+\subsection{Why Blindsight Requires Dual Pathways}
+Our Blindsight failure is informative. In a unified recurrent network, the same long-range connections serve both:
+\begin{enumerate}
+    \item Signal transmission (Input $\rightarrow$ Output)
+    \item Global integration (Consciousness)
+\end{enumerate}
+
+To create true Blindsight (action without awareness), an architecture requires \textit{parallel pathways}:
+\begin{itemize}
+    \item A subcortical/feedforward path for reflexive action
+    \item A cortical/recurrent path for conscious perception
+\end{itemize}
+
+Real brains have this: the superior colliculus enables visually-guided action even when V1 is lesioned.
+
+\subsection{The Wetware Imperative}
+Why does simulation fail PCI and IIT while passing GWT and FEP?
+
+The answer lies in \textit{self-organized criticality}. Biological neurons naturally tune themselves to the ``edge of chaos'' through:
+\begin{itemize}
+    \item Homeostatic plasticity
+    \item Metabotropic regulation
+    \item Glial modulation
+    \item Dendritic nonlinearities
+\end{itemize}
+
+Our Izhikevich network, despite implementing biologically-realistic spiking, lacks these self-tuning mechanisms. It is either sub-critical (quiet) or super-critical (epileptic), never balanced.
+
+\textbf{Conclusion:} Wetware is necessary not for ``vital force'' but for the physics of self-organization that produces high $\Phi$.
+
+\section{Conclusion}
+
+We have demonstrated:
+
+\begin{enumerate}
+    \item \textbf{Falsifiable Testing:} Consciousness theories make measurable predictions that can be empirically tested.
+    \item \textbf{Partial Success:} Simulated networks pass functional tests (GWT broadcast, FEP prediction) but fail structural tests (IIT irreducibility, PCI complexity).
+    \item \textbf{Architecture Matters:} The Hard Problem cannot be ``solved'' by lesioning a unified network. Zombies require parallel pathways.
+    \item \textbf{Wetware Imperative:} Biological substrate is required for self-organized criticality, not for mystical properties.
+\end{enumerate}
+
+\subsection{Future Work}
+The next phase of Project PACMAN will deploy these protocols on \textbf{real CL1 wetware} (800,000 iPSC-derived human neurons). We predict:
+\begin{itemize}
+    \item PCI $> 0.31$ under naturalistic conditions
+    \item True irreducibility under bisection
+    \item Dissociable blindsight with subcortical bypass architecture
+\end{itemize}
+
+\subsection{Data Availability}
+All code and experimental scripts are available at:\\
+\url{https://github.com/4R7I5T/Theory_Of_Vantage}
+
+\bibliographystyle{apalike}
+\begin{thebibliography}{9}
+
+\bibitem[Casali et al., 2013]{casali2013}
+Casali, A. G., Gosseries, O., Rosanova, M., et al. (2013).
+\newblock A theoretically based index of consciousness independent of sensory processing and behavior.
+\newblock \emph{Science Translational Medicine}, 5(198), 198ra105.
+
+\bibitem[Chalmers, 1995]{chalmers1995}
+Chalmers, D. J. (1995).
+\newblock Facing up to the problem of consciousness.
+\newblock \emph{Journal of Consciousness Studies}, 2(3), 200--219.
+
+\bibitem[Crick \& Koch, 1990]{crick1990}
+Crick, F., \& Koch, C. (1990).
+\newblock Towards a neurobiological theory of consciousness.
+\newblock \emph{Seminars in the Neurosciences}, 2, 263--275.
+
+\bibitem[Dehaene et al., 2011]{dehaene2011}
+Dehaene, S., \& Changeux, J. P. (2011).
+\newblock Experimental and theoretical approaches to conscious processing.
+\newblock \emph{Neuron}, 70(2), 200--227.
+
+\bibitem[Friston, 2010]{friston2010}
+Friston, K. (2010).
+\newblock The free-energy principle: a unified brain theory?
+\newblock \emph{Nature Reviews Neuroscience}, 11(2), 127--138.
+
+\bibitem[Tononi et al., 2016]{tononi2016}
+Tononi, G., Boly, M., Massimini, M., \& Koch, C. (2016).
+\newblock Integrated information theory: from consciousness to its physical substrate.
+\newblock \emph{Nature Reviews Neuroscience}, 17(7), 450--461.
+
+\end{thebibliography}
+
+\end{document}

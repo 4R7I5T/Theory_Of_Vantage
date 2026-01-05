@@ -66,7 +66,7 @@ class NeuralPhysics:
         n = self.cfg.n_neurons
         
         # 1. Input
-        I = self.current_input.copy() + np.random.normal(0, 0.5, n)
+        I = self.current_input.copy() + np.random.normal(0, 2.0, n)
         if external_current is not None:
             I += external_current
             
