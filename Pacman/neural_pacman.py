@@ -67,12 +67,12 @@ class Ghost:
         self.name = name
         self.color = color
         self.brain = brain
-        self.x = start_x
-        self.y = start_y
-        self.target_x = start_x
-        self.target_y = start_y
-        self.speed = 0.08  # Slower than pacman
+        self.x = float(start_x)
+        self.y = float(start_y)
+        self.speed = 0.08
         self.direction = 0  # 0=right, 1=left, 2=up, 3=down
+        # Start moving immediately if possible
+        self.direction = 0
         
     def get_sensory_input(self, pacman_x, pacman_y):
         """Generate input for neural network."""
@@ -82,49 +82,72 @@ class Ghost:
             MAZE_WIDTH, MAZE_HEIGHT
         )
     
+    def can_move(self, x, y, direction, maze):
+        dx, dy = [(1, 0), (-1, 0), (0, -1), (0, 1)][direction]
+        next_x = int(round(x + dx))
+        next_y = int(round(y + dy))
+        if 0 <= next_x < MAZE_WIDTH and 0 <= next_y < MAZE_HEIGHT:
+            return maze[next_y][next_x] != '1'
+        return False
+
     def update(self, pacman_x, pacman_y, maze):
-        # Only decide new direction when reaching a cell center
-        if abs(self.x - self.target_x) < 0.05 and abs(self.y - self.target_y) < 0.05:
-            self.x = self.target_x
-            self.y = self.target_y
-            
-            # Get neural network decision
-            sensory = self.get_sensory_input(pacman_x, pacman_y)
-            action, _ = self.brain.forward(sensory)
-            
-            # Try to move in the decided direction
-            dx, dy = [(1, 0), (-1, 0), (0, -1), (0, 1)][action]
-            new_x, new_y = int(self.x + dx), int(self.y + dy)
-            
-            # Check if valid move
-            if 0 <= new_x < MAZE_WIDTH and 0 <= new_y < MAZE_HEIGHT:
-                if maze[new_y][new_x] != '1':
-                    self.target_x = new_x
-                    self.target_y = new_y
-                    self.direction = action
-                else:
-                    # Try alternative directions
-                    for alt_action in [0, 1, 2, 3]:
-                        if alt_action == action:
-                            continue
-                        dx, dy = [(1, 0), (-1, 0), (0, -1), (0, 1)][alt_action]
-                        new_x, new_y = int(self.x + dx), int(self.y + dy)
-                        if 0 <= new_x < MAZE_WIDTH and 0 <= new_y < MAZE_HEIGHT:
-                            if maze[new_y][new_x] != '1':
-                                self.target_x = new_x
-                                self.target_y = new_y
-                                self.direction = alt_action
-                                break
+        # Determine if centered in tile (within small threshold)
+        # We use a slightly wider threshold to catch the center crossing
+        threshold = self.speed * 0.9
         
-        # Smooth movement towards target
-        if self.x < self.target_x:
-            self.x = min(self.x + self.speed, self.target_x)
-        elif self.x > self.target_x:
-            self.x = max(self.x - self.speed, self.target_x)
-        if self.y < self.target_y:
-            self.y = min(self.y + self.speed, self.target_y)
-        elif self.y > self.target_y:
-            self.y = max(self.y - self.speed, self.target_y)
+        # Current integer position
+        curr_grid_x = int(round(self.x))
+        curr_grid_y = int(round(self.y))
+        
+        # Check if we are at the center of the tile
+        dist_x = abs(self.x - curr_grid_x)
+        dist_y = abs(self.y - curr_grid_y)
+        
+        at_center = dist_x < threshold and dist_y < threshold
+        
+        if at_center:
+            # Snap to exact center to prevent drift
+            self.x = float(curr_grid_x)
+            self.y = float(curr_grid_y)
+            
+            # Get available moves at this intersection
+            valid_moves = []
+            for d in range(4):
+                if self.can_move(self.x, self.y, d, maze):
+                    valid_moves.append(d)
+            
+            # Neural decision
+            sensory = self.get_sensory_input(pacman_x, pacman_y)
+            # Override network output: only consider valid moves
+            # We get raw output from brain to see preferences, but mask invalid ones
+            # For the simple GhostBrain (MLP), we just get the best action.
+            # But the Zombie MLP might output an invalid wall move.
+            # We need to pick the highest output that IS valid.
+            
+            # Assuming brain.forward returns (action, _) where action is argmax
+            # We need raw logits if possible, but GhostBrain returns action.
+            # Let's just trust the brain but fallback if invalid.
+            nm_action, _ = self.brain.forward(sensory)
+            
+            if nm_action in valid_moves:
+                self.direction = nm_action
+            elif valid_moves:
+                # If network chose wall, pick random valid move (Zombie stupidity/fallback)
+                # Or pick valid move closest to desired (simplification: random)
+                self.direction = valid_moves[np.random.randint(len(valid_moves))]
+            else:
+                # Stuck (shouldn't happen in standard maze)
+                pass
+
+        # Execute movement if valid
+        if self.can_move(self.x, self.y, self.direction, maze):
+            dx, dy = [(1, 0), (-1, 0), (0, -1), (0, 1)][self.direction]
+            self.x += dx * self.speed
+            self.y += dy * self.speed
+        else:
+            # Hit wall, stop/center
+            self.x = float(int(round(self.x)))
+            self.y = float(int(round(self.y)))
     
     def draw(self, screen):
         px = int(self.x * CELL_SIZE + CELL_SIZE // 2)
@@ -139,50 +162,69 @@ class Ghost:
 
 class Pacman:
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.target_x = x
-        self.target_y = y
+        self.x = float(x)
+        self.y = float(y)
         self.speed = 0.12
-        self.direction = 0
+        self.direction = 0     # Current moving direction
+        self.next_direction = 0 # Buffered input
+        self.moving = False
         self.mouth_open = True
         self.mouth_timer = 0
         
-    def update(self, keys, maze):
-        # Handle input
-        if abs(self.x - self.target_x) < 0.05 and abs(self.y - self.target_y) < 0.05:
-            self.x = self.target_x
-            self.y = self.target_y
-            
-            dx, dy = 0, 0
-            if keys[pygame.K_LEFT]:
-                dx, dy = -1, 0
-                self.direction = 1
-            elif keys[pygame.K_RIGHT]:
-                dx, dy = 1, 0
-                self.direction = 0
-            elif keys[pygame.K_UP]:
-                dx, dy = 0, -1
-                self.direction = 2
-            elif keys[pygame.K_DOWN]:
-                dx, dy = 0, 1
-                self.direction = 3
-            
-            new_x, new_y = int(self.x + dx), int(self.y + dy)
-            if 0 <= new_x < MAZE_WIDTH and 0 <= new_y < MAZE_HEIGHT:
-                if maze[new_y][new_x] != '1':
-                    self.target_x = new_x
-                    self.target_y = new_y
+    def can_move(self, x, y, direction, maze):
+        dx, dy = [(1, 0), (-1, 0), (0, -1), (0, 1)][direction]
+        next_x = int(round(x + dx))
+        next_y = int(round(y + dy))
+        if 0 <= next_x < MAZE_WIDTH and 0 <= next_y < MAZE_HEIGHT:
+            return maze[next_y][next_x] != '1'
+        return False
         
-        # Movement
-        if self.x < self.target_x:
-            self.x = min(self.x + self.speed, self.target_x)
-        elif self.x > self.target_x:
-            self.x = max(self.x - self.speed, self.target_x)
-        if self.y < self.target_y:
-            self.y = min(self.y + self.speed, self.target_y)
-        elif self.y > self.target_y:
-            self.y = max(self.y - self.speed, self.target_y)
+    def update(self, keys, maze):
+        # 1. Handle Input (Buffered)
+        if keys[pygame.K_LEFT]:
+            self.next_direction = 1
+            self.moving = True
+        elif keys[pygame.K_RIGHT]:
+            self.next_direction = 0
+            self.moving = True
+        elif keys[pygame.K_UP]:
+            self.next_direction = 2
+            self.moving = True
+        elif keys[pygame.K_DOWN]:
+            self.next_direction = 3
+            self.moving = True
+            
+        # 2. Movement Logic (Grid-Locked)
+        threshold = self.speed * 0.95
+        curr_grid_x = int(round(self.x))
+        curr_grid_y = int(round(self.y))
+        
+        dist_x = abs(self.x - curr_grid_x)
+        dist_y = abs(self.y - curr_grid_y)
+        at_center = dist_x < threshold and dist_y < threshold
+
+        if at_center:
+            # We are at an intersection/tile center: Try to switch to buffered direction
+            self.x = float(curr_grid_x)
+            self.y = float(curr_grid_y)
+            
+            if self.moving and self.can_move(self.x, self.y, self.next_direction, maze):
+                self.direction = self.next_direction
+            
+            # Check if we can continue in current direction
+            if not self.can_move(self.x, self.y, self.direction, maze):
+                self.moving = False # Stop if hitting wall
+
+        # 3. Apply Velocity
+        if self.moving:
+            if self.can_move(self.x, self.y, self.direction, maze) or not at_center:
+                 dx, dy = [(1, 0), (-1, 0), (0, -1), (0, 1)][self.direction]
+                 self.x += dx * self.speed
+                 self.y += dy * self.speed
+            else:
+                 # Snap to center if stuck
+                 self.x = float(curr_grid_x)
+                 self.y = float(curr_grid_y)
         
         # Animate mouth
         self.mouth_timer += 1
