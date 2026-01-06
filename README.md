@@ -137,13 +137,21 @@ Theory_Of_Vantage/
 
 ## 🚀 Quick Start
 
+### 🤖 Emulation Mode (Default)
+Run the key experiment with the integrated Izhikevich simulator:
 ```bash
-# Clone
-git clone https://github.com/4R7I5T/Theory_Of_Vantage.git
-cd Theory_Of_Vantage
-
-# Run the key experiment
+# Run the scientific proof
 python Pacman/run_dual_pathway_experiment.py
+
+# Play the demo game
+python Pacman/neural_pacman.py
+```
+
+### 🧠 Wetware Mode (Real CL1)
+To run on actual biological hardware (requires `cl_sdk`):
+```bash
+python Pacman/wetware_pacman.py
+```
 
 # Expected output:
 # UNIFIED Brain:      Behavior 0% (collapsed)
