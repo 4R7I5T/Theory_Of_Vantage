@@ -10,9 +10,9 @@
 
 We use a classic Pacman game as our testbed for consciousness research. The twist: **Pacman's brain is a spiking neural network** (300 Izhikevich neurons), while **Ghosts are feedforward MLPs** (philosophical zombies).
 
-![Pacman Consciousness Experiment](pacman_consciousness_experiment.gif)
+![Neural Pacman](consciousness_hero.png)
 
-*Pacman navigating with a biologically-inspired recurrent neural network*
+*A spiking neural network controlling Pacman: testing consciousness in silicon*
 
 ---
 
@@ -45,7 +45,7 @@ We attempted to create a "Philosophical Zombie" (action without consciousness) b
 | **UNIFIED** (Single Network) | 0% | 💀 Collapsed |
 | **DUAL-PATHWAY** (Reflex + Cortical) | 24% | ✅ Survived |
 
-![Pacman Sentience Demo](pacman_sentience_demo.gif)
+![Zombie vs Conscious Architecture](zombie_vs_conscious.png)
 
 **Conclusion:** Zombies are **only possible with modular architecture**. In integrated systems, you cannot turn off consciousness without destroying function.
 
@@ -82,9 +82,7 @@ Our simulations revealed a critical limitation:
 
 **The CL1 Solution:**
 
-![Genesis Pong Demo](genesis_pong_demo.gif)
-
-*Cortical Labs CL1: 800,000 iPSC-derived human neurons on MEA*
+**Cortical Labs CL1**: 800,000 iPSC-derived human neurons on multielectrode array (MEA). Unlike simulation, real neurons self-organize to criticality.
 
 Biological neurons naturally tune to the "edge of chaos" through:
 - Metabotropic regulation
