@@ -10,9 +10,7 @@
 
 We use a classic Pacman game as our testbed for consciousness research. The twist: **Pacman's brain is a spiking neural network** (300 Izhikevich neurons), while **Ghosts are feedforward MLPs** (philosophical zombies).
 
-![Neural Pacman](consciousness_hero.png)
 
-*A spiking neural network controlling Pacman: testing consciousness in silicon*
 
 ---
 
@@ -45,7 +43,7 @@ We attempted to create a "Philosophical Zombie" (action without consciousness) b
 | **UNIFIED** (Single Network) | 0% | 💀 Collapsed |
 | **DUAL-PATHWAY** (Reflex + Cortical) | 24% | ✅ Survived |
 
-![Zombie vs Conscious Architecture](zombie_vs_conscious.png)
+
 
 **Conclusion:** Zombies are **only possible with modular architecture**. In integrated systems, you cannot turn off consciousness without destroying function.
 
