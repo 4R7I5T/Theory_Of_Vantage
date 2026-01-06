@@ -11,7 +11,7 @@
 We use a classic Pacman game as our testbed for consciousness research. The twist: **Pacman's brain is a spiking neural network** (300 Izhikevich neurons), while **Ghosts are feedforward MLPs** (philosophical zombies).
 
 
-![Consciousness vs Zombies Experiment Demo](assets/neural_pacman_demo.gif)
+![Consciousness vs Zombies Experiment Demo](./assets/neural_pacman_demo.gif)
 *Right panel shows real-time neural difference: Pacman (Izhikevich Recurrent Brain) vs Ghosts (Feedforward Zombie).*
 ---
 
