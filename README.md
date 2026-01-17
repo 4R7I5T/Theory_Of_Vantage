@@ -8,8 +8,18 @@
 
 ## 🎮 The Pacman Paradigm
 
-We use a classic Pacman game as our testbed for consciousness research. The twist: **Pacman's brain is a spiking neural network** (300 Izhikevich neurons), while **Ghosts are feedforward MLPs** (philosophical zombies).
+**[>> FULL EXPERIMENT DOCUMENTATION <<](./Pacman/README.md)**
 
+We test machine consciousness by pitting two distinct neural architectures against each other in a shared environment:
+
+1.  **Pacman (The Conscious Agent)**: A **Recurrent Spiking Neural Network (SNN)** simulated with **Brian2**.
+    *   300 Izhikevich neurons with STDP plasticity.
+    *   Temporal integration enables decision-making based on *internal state history*.
+2.  **Ghosts (The Zombie Agents)**: Feedforward Reflex Automata.
+    *   Instantaneous state-response logic.
+    *   No internal "now" or memory of the past.
+
+The experiment measures **Informational Closures** and **Phi (Integrated Information)** to demonstrate that only the Recurrent SNN satisfies the mathematical requirements for subjective experience.
 
 ![Consciousness vs Zombies Experiment Demo](./assets/neural_pacman_demo.gif)
 *Right panel shows real-time neural difference: Pacman (Izhikevich Recurrent Brain) vs Ghosts (Feedforward Zombie).*
@@ -138,8 +148,11 @@ Theory_Of_Vantage/
 ## 🚀 Quick Start
 
 ### 🤖 Emulation Mode (Default)
-Run the key experiment with the integrated Izhikevich simulator:
+Run the experiment using the **High-Fidelity Brian2 Simulator** (Izhikevich Model + STDP):
 ```bash
+# Enable Brian2 backend
+export CL_USE_BRIAN2=1
+
 # Run the scientific proof
 python Pacman/run_dual_pathway_experiment.py
 
