@@ -365,6 +365,7 @@ class Ghost(pygame.sprite.Sprite):
 
     def update(self, walls, pac_rect):
         self.timer += 1
+        self.last_activations = None # Reset activations
         
         # 1. HOUSE LOGIC
         if self.state == 'in_house':
@@ -425,7 +426,8 @@ class Ghost(pygame.sprite.Sprite):
                     w, h = len(MAP[0]), len(MAP)
                     
                     sensory = self.brain.get_sensory_input((gx, gy), (px, py), w, h)
-                    action, _ = self.brain.forward(sensory)
+                    action, activations = self.brain.forward(sensory)
+                    self.last_activations = activations # Store for visualization
                     
                     # 0=R, 1=L, 2=U, 3=D
                     net_map = {0:'right', 1:'left', 2:'up', 3:'down'}
@@ -560,8 +562,9 @@ class Game:
         pygame.init()
         
         # Game area + visualization panel
+        # Enlarged panel to fit 2 brains side by side or stacked
         self.game_w = len(MAP[0]) * CHAR_SIZE
-        self.panel_w = 220  # Neural visualization panel width
+        self.panel_w = 400  # Enlarged from 220 to 400
         self.screen_w = self.game_w + self.panel_w
         self.screen_h = len(MAP) * CHAR_SIZE + 50
         
@@ -733,71 +736,152 @@ class Game:
     def draw_neural_panel(self):
         """Draw the neural activity visualization panel on the right side."""
         panel_x = self.game_w + 5
-        panel_w = self.panel_w - 10
+        panel_w = (self.panel_w - 10) // 2 
         
         # Panel background
-        pygame.draw.rect(self.screen, (20, 20, 40), (self.game_w, 0, self.panel_w, self.screen_h))
-        pygame.draw.line(self.screen, (60, 60, 100), (self.game_w, 0), (self.game_w, self.screen_h), 2)
+        pygame.draw.rect(self.screen, (20, 20, 30), (self.game_w, 0, self.panel_w, self.screen_h))
+        pygame.draw.line(self.screen, (60, 60, 80), (self.game_w, 0), (self.game_w, self.screen_h), 2)
         
         # Title
-        title = self.title_font.render("NEURAL ACTIVITY", True, (100, 200, 255))
-        self.screen.blit(title, (panel_x, 10))
+        title = self.title_font.render("NEURAL ARCHITECTURE TEST", True, (200, 200, 255))
+        self.screen.blit(title, (self.game_w + 20, 10))
         
-        y = 40
+        # --- LEFT SUB-PANEL: PACMAN (Recurrent) ---
+        col1_x = self.game_w + 10
+        y = 50
         
-        # === CONSCIOUS AGENT (Pacman) ===
         label = self.font.render("PACMAN (CONSCIOUS)", True, YELLOW)
-        self.screen.blit(label, (panel_x, y))
-        y += 18
+        self.screen.blit(label, (col1_x, y))
+        y += 20
+        sub_label = self.font.render("Recurrent SNN (Brian2)", True, (150, 150, 100))
+        self.screen.blit(sub_label, (col1_x, y))
+        y += 25
         
-        # Current spikes
+        # Spikes/Metrics
         spikes = self.pacman.last_spikes
-        spike_text = self.font.render(f"Spikes/Decision: {spikes}", True, WHITE)
-        self.screen.blit(spike_text, (panel_x, y))
-        y += 16
+        spike_text = self.font.render(f"Spikes/Step: {spikes}", True, WHITE)
+        self.screen.blit(spike_text, (col1_x, y)); y += 20
         
-        # Latency
         latency = getattr(self.pacman.brain, 'last_latency', 0)
-        lat_text = self.font.render(f"Latency: {latency:.2f}ms", True, WHITE)
-        self.screen.blit(lat_text, (panel_x, y))
-        y += 18
-        
-        # Spike bar
-        bar_w = min(spikes * 2, panel_w - 10)
-        pygame.draw.rect(self.screen, (40, 40, 60), (panel_x, y, panel_w - 10, 12))
-        pygame.draw.rect(self.screen, (255, 255, 100), (panel_x, y, bar_w, 12))
+        lat_text = self.font.render(f"Integration: {latency:.1f}ms", True, WHITE)
+        self.screen.blit(lat_text, (col1_x, y)); y += 20
+
+        # Spike Rate Bar
+        bar_w = 160
+        ratio = min(1.0, spikes / 50.0)
+        pygame.draw.rect(self.screen, (40, 40, 60), (col1_x, y, bar_w, 10))
+        pygame.draw.rect(self.screen, (255, 255, 100), (col1_x, y, bar_w * ratio, 10))
         y += 20
         
-        # Update spike history
-        self.spike_history.append(spikes)
-        if len(self.spike_history) > self.max_history:
-            self.spike_history.pop(0)
-            
-        # Mini spike raster (membrane potentials visualization)
-        raster_h = 80
-        pygame.draw.rect(self.screen, (10, 10, 20), (panel_x, y, panel_w - 10, raster_h))
+        # Raster Plot (Temporal Integration)
+        raster_h = 200
+        pygame.draw.rect(self.screen, (10, 10, 15), (col1_x, y, bar_w, raster_h))
         
-        # Draw membrane potentials as row of dots
+        # Draw membrane potentials
         physics = self.pacman.brain.physics
-        n_show = 100  # Show subset of neurons
+        n_show = 60
         for i in range(n_show):
-            neuron_idx = i * 3  # Sample every 3rd neuron
+            neuron_idx = i * 5
             if neuron_idx < len(physics.v):
                 v = physics.v[neuron_idx]
-                # Map -80 to +30 onto 0-raster_h
+                # Map -80..30 to 0..raster_h
                 ny = int(((-v + 30) / 110) * raster_h)
                 ny = max(0, min(raster_h - 2, ny))
                 
-                # Color by excitatory vs inhibitory
-                if neuron_idx < physics.cfg.n_exc:
-                    color = (100, 255, 100) if v > -50 else (30, 80, 30)
-                else:
+                color = (100, 255, 100) if v > -50 else (30, 80, 30)
+                if neuron_idx >= physics.cfg.n_exc:
                     color = (255, 100, 100) if v > -50 else (80, 30, 30)
-                    
-                nx = panel_x + int(i * (panel_w - 10) / n_show)
-                pygame.draw.circle(self.screen, color, (nx, y + ny), 2)
                 
+                nx = col1_x + int(i * bar_w / n_show)
+                pygame.draw.circle(self.screen, color, (nx, y + ny), 2)
         y += raster_h + 10
+        
+        # --- RIGHT SUB-PANEL: GHOST (Feedforward) ---
+        col2_x = self.game_w + 200
+        y = 50
+        
+        # Find active ghost (closest to pacman)
+        pac_center = self.pacman.rect.center
+        active_ghost = min(self.ghosts, key=lambda g: 
+            abs(g.rect.centerx - pac_center[0]) + abs(g.rect.centery - pac_center[1]))
+        
+        label_g = self.font.render(f"{active_ghost.name.upper()} (ZOMBIE)", True, active_ghost.base_color)
+        self.screen.blit(label_g, (col2_x, y))
+        y += 20
+        sub_label_g = self.font.render("Feedforward MLP", True, (150, 150, 150))
+        self.screen.blit(sub_label_g, (col2_x, y))
+        y += 25
+        
+        # Metrics
+        act_text = self.font.render("State: REFLEX", True, WHITE)
+        self.screen.blit(act_text, (col2_x, y)); y += 20
+        
+        delay_text = self.font.render("Integration: 0.0ms", True, (255, 100, 100))
+        self.screen.blit(delay_text, (col2_x, y)); y += 20
+        
+        # Feedforward Visualization
+        # Draw a simple MLP diagram: Input(4) -> Hidden(20) -> Output(4)
+        y += 10
+        mlp_w = 160
+        mlp_h = 200
+        pygame.draw.rect(self.screen, (10, 10, 15), (col2_x, y, mlp_w, mlp_h))
+        
+        activations = getattr(active_ghost, 'last_activations', None)
+        
+        # Architecture positions
+        cx_in = col2_x + 20
+        cx_hid = col2_x + 80
+        cx_out = col2_x + 140
+        
+        cy_start = y + 20
+        space_in = 40
+        space_hid = 8
+        space_out = 40
+        
+        # Draw connections (dim)
+        for i in range(4):
+            for j in range(20):
+                # Input -> Hidden
+                start = (cx_in, cy_start + i*space_in)
+                end = (cx_hid, y + 10 + j*space_hid)
+                # If active, brighten line
+                val = activations[j] if activations is not None else 0
+                alpha = int(min(255, val * 50))
+                color = (alpha, alpha, alpha) if alpha > 20 else (30,30,30)
+                if alpha > 20: 
+                    pygame.draw.line(self.screen, color, start, end, 1)
+
+        # Draw Nodes
+        # INPUT NODES
+        for i in range(4):
+            pos = (cx_in, cy_start + i*space_in)
+            pygame.draw.circle(self.screen, (100, 100, 255), pos, 5)
+            
+        # HIDDEN NODES (Light up if active)
+        for i in range(20):
+            pos = (cx_hid, y + 10 + i*space_hid)
+            val = activations[i] if activations is not None else 0
+            # Relu activation usually 0 to ~3
+            intensity = min(255, int(val * 100))
+            color = (intensity, intensity, intensity)
+            pygame.draw.circle(self.screen, color, pos, 3)
+            
+        # OUTPUT NODES
+        for i in range(4):
+            pos = (cx_out, cy_start + i*space_out)
+            # Highlight chosen direction
+            is_chosen = False
+            # Map dir to index 0=R,1=L,2=U,3=D (from ghost logic)
+            # active_ghost.move_dir matches index?
+            # 'right'=0, 'left'=1, 'up'=2, 'down'=3
+            idx_map = {'right':0, 'left':1, 'up':2, 'down':3}
+            if idx_map.get(active_ghost.move_dir) == i:
+                is_chosen = True
+                
+            color = (255, 0, 0) if is_chosen else (50, 0, 0)
+            pygame.draw.circle(self.screen, color, pos, 6)
+            if is_chosen:
+                 pygame.draw.circle(self.screen, WHITE, pos, 2)
         
         # Spike history graph
         label = self.font.render("Activity History:", True, (150, 150, 150))
